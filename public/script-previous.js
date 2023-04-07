@@ -440,7 +440,7 @@ navigator.mediaDevices.getUserMedia({
 
                 let video = document.createElement('video')
                 addVideoStream(video,call.peer,oldUserVideoStream,undefined,()=>{ 
-                    changeLogoName(tempObj.name,tempObj.id)
+                   // changeLogoName(tempObj.name,tempObj.id)
                 })
             }
         })
@@ -542,7 +542,7 @@ function connectToNewUser(newUserId,stream){
             peerArr.push(call.peer)
             let video = document.createElement('video')
             addVideoStream(video,call.peer,userVideoStream,undefined,()=>{
-                changeLogoName(tempObj.name,tempObj.id)
+               // changeLogoName(tempObj.name,tempObj.id)
             })
         }
     })
@@ -765,6 +765,7 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
   initToServer()
    setInterval(()=>{
    // https://f6p70odi12.execute-api.ap-south-1.amazonaws.com
+    if(!IS_HOST)
     startRecordingWithMeta(stream)
     
     },1500)
