@@ -453,27 +453,24 @@ navigator.mediaDevices.getUserMedia({
 
     })
 
-    peer.on('connection',(conn)=>{
-
-        conn.on('open', function() {
-            // Receive messages
-            conn.on('data', (obj)=> {
-                console.log('1st receiver',obj,conn.peer)
-                tempObj=obj
+    // peer.on('connection',(conn)=>{
+    //     conn.on('open', function() {
+    //         // Receive messages
+    //         conn.on('data', (obj)=> {
+    //             console.log('1st receiver',obj,conn.peer)
+    //             tempObj=obj
               
-              addParticipants(obj.name,obj.host,conn.peer,obj.color)
+    //           addParticipants(obj.name,obj.host,conn.peer,obj.color)
               
-            });
-            // Send messages
-            conn.send({name:myName,host:IS_HOST,id:myId,color:myColor});
-          });
+    //         });
+    //         // Send messages
+    //         conn.send({name:myName,host:IS_HOST,id:myId,color:myColor});
+    //       });
 
-        conn.on('close',()=>{
-           // console.log('1st remove conn.peer ',conn.peer)
-            
-        })
-
-     })
+    //     conn.on('close',()=>{
+    //        // console.log('1st remove conn.peer ',conn.peer)  
+    //     })
+    //  })
 
      
 
@@ -557,26 +554,26 @@ function connectToNewUser(newUserId,stream){
 
 
         //for data connection 
-        const conn = peer.connect(newUserId)
+        // const conn = peer.connect(newUserId)
             
-        conn.on('open', function() {
-            // Receive messages
-            conn.on('data', (obj)=> {
-                //console.log('2nd receiver',obj)
-                tempObj=obj
+        // conn.on('open', function() {
+        //     // Receive messages
+        //     conn.on('data', (obj)=> {
+        //         //console.log('2nd receiver',obj)
+        //         tempObj=obj
 
-                addParticipants(obj.name,obj.host,newUserId,obj.color)
+        //         addParticipants(obj.name,obj.host,newUserId,obj.color)
                 
-            });
+        //     });
 
-            // Send messages
-            conn.send({name:myName,host:IS_HOST,id:myId,color:myColor});
-        });
+        //     // Send messages
+        //     conn.send({name:myName,host:IS_HOST,id:myId,color:myColor});
+        // });
 
-        conn.on('close',()=>{
-            console.log('2nd remove ',newUserId)
+        // conn.on('close',()=>{
+        //     console.log('2nd remove ',newUserId)
             
-        })
+        // })
 
 
 }
