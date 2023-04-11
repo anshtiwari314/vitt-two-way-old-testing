@@ -104,7 +104,7 @@ let usrBtn = document.getElementById('usrBtn')
 let sideWindowStatus = true
 let myStream
 
-const peer = new Peer(myId)
+const peer = new Peer(myId,{'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]})
 
 
 vidIcon.addEventListener('click',()=>{

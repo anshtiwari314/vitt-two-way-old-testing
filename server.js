@@ -6,7 +6,7 @@ const {v4:uuid4} = require('uuid')
 const dotenv = require('dotenv')
 const cors = require('cors')
 
-let port = process.env.PORT || 5005
+let port = process.env.PORT || 5007
 
 dotenv.config()
 app.set("view engine","ejs")
