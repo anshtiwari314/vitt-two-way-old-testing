@@ -114,15 +114,17 @@ io.on('connection',socket =>{
         socket.broadcast.to(roomId).emit('user-connected',userId)
         console.log(`join-room`,roomId,userId)
 
+        socket.on('send-msg',(msg,userName)=>{
+            console.log('send-msg',msg,userName)
+            socket.broadcast.to(roomId).emit('receive-msg', msg,userName);
+        })
+        
         socket.on('disconnect', () =>{
             console.log('someone disconnect',userId)
             socket.broadcast.to(roomId).emit('user-disconnected', userId);
          })
 
-        socket.on('send-msg',(msg,userName)=>{
-            console.log('send-msg',msg,userName)
-            socket.broadcast.to(roomId).emit('receive-msg', msg,userName);
-        })
+        
     })
     socket.on('camera-toggle',(roomId,userId,state)=>{
        // console.log(roomId,userId,state)
