@@ -460,8 +460,8 @@ navigator.mediaDevices.getUserMedia({
         
         call.on('close',()=>{
             console.log('user leaved 1')
-           //removeVideo(call.peer)
-           //removeParticipants(call.peer)
+           removeVideo(call.peer)
+           removeParticipants(call.peer)
         })
 
     })
@@ -553,8 +553,8 @@ function connectToNewUser(newUserId,stream){
 
     call.on('close',()=>{
         console.log('user leaved 2')
-    //   removeVideo(newUserId)
-    //   removeParticipants(newUserId)
+        removeVideo(newUserId)
+        removeParticipants(newUserId)
     
     })
     peersObj[newUserId] =call
