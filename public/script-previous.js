@@ -107,7 +107,7 @@ let myStream
 //const peer = new Peer(myId,{'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]})
 const peer = new Peer(myId,{
     host: "vitt-peerjs-server-production.up.railway.app",
-    port: 443,
+    port: 6183,
     path: "/myapp",
 })
 
