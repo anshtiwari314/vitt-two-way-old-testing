@@ -106,8 +106,8 @@ let myStream
 
 //const peer = new Peer(myId,{'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]})
 const peer = new Peer(myId,{
-    host: "vitt-peerjs-server-production.up.railway.app",
-    port: 443,
+    host: "localhost",
+    port: 5009,
     path: "/myapp"
 })
 
@@ -424,7 +424,12 @@ let peersObj = {}
 //console.log(navigator.mediaDevices)
 
 navigator.mediaDevices.getUserMedia({
-    video:true,
+    video:{
+        frameRate:{
+            ideal:60,
+            min:10
+        }
+    },
     audio:true
 }).then(stream=>{
     myStream=stream
@@ -657,7 +662,7 @@ function timer(hour,min,sec,d){
 //code to send record data
 
 
-const soc = io('vitt-ai-request-broadcaster-production.up.railway.app')
+//const soc = io('vitt-ai-request-broadcaster-production.up.railway.app')
 
 
 
@@ -1078,25 +1083,25 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
         console.log(`connection established ${id}`)
         })
         
-    soc.on('receive-data',(data)=>{
-       console.log('receive from node',data)
+    // soc.on('receive-data',(data)=>{
+    //    console.log('receive from node',data)
 
-       if(data.imageurl){
+    //    if(data.imageurl){
 
-        addImageMsg(data)
-        }else if(data.value){
+    //     addImageMsg(data)
+    //     }else if(data.value){
 
-        addInputForm(data)
-        }else if(data.radio){
+    //     addInputForm(data)
+    //     }else if(data.radio){
 
-        addRadioForm(data)
-        }else if(data.content){
-        addTextMsg(data)
-        }else{
-            addOnlySuggestiveMsg(data)
-        }
+    //     addRadioForm(data)
+    //     }else if(data.content){
+    //     addTextMsg(data)
+    //     }else{
+    //         addOnlySuggestiveMsg(data)
+    //     }
        
-    })
+    // })
 
 })
 
