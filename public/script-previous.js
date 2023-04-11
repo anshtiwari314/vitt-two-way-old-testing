@@ -111,7 +111,7 @@ const peer = new Peer(myId,{
     path: "/myapp"
 })
 
-    peer.on('disconnect',()=>{
+    peer.on('disconnected',()=>{
         console.log(`disconnected from peer network`)
     })
 
