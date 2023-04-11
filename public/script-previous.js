@@ -509,7 +509,8 @@ function changeLogoName(name,id){
     
 }
 function removeParticipants(id){
-    let element = document.getElementsByClassName(id)[0]
+    
+    let element = document.querySelector(`.${id}`)
     element.remove()
 }
 function addParticipants(name,host,id,color){
@@ -555,7 +556,7 @@ function connectToNewUser(newUserId,stream){
         console.log('user leaved 2')
         removeVideo(newUserId)
         removeParticipants(newUserId)
-    
+        
     })
     peersObj[newUserId] =call
 
