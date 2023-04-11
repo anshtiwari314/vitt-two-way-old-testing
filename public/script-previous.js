@@ -109,6 +109,7 @@ const peer = new Peer(myId,{
     host: "vitt-peerjs-server-production.up.railway.app",
     port: 443,
     path: "/myapp",
+    iceServers: [{ 'urls': 'stun:stun.l.google.com:19302' }]
 })
 
 vidIcon.addEventListener('click',()=>{
