@@ -108,9 +108,12 @@ let myStream
 const peer = new Peer(myId,{
     host: "vitt-peerjs-server-production.up.railway.app",
     port: 443,
-    path: "/myapp",
-    iceServers: [{ 'urls': 'stun:stun.l.google.com:19302' }]
+    path: "/myapp"
 })
+
+    peer.on('disconnect',()=>{
+        console.log(`disconnected from peer network`)
+    })
 
 vidIcon.addEventListener('click',()=>{
 
