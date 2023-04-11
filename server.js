@@ -109,10 +109,10 @@ app.get('/:room',(req,res)=>{
 io.on('connection',socket =>{
 
     socket.on('join-room',(roomId,userId)=>{
-
+        
         socket.join(roomId)
         socket.broadcast.to(roomId).emit('user-connected',userId)
-        console.log(roomId,userId)
+        console.log(`join-room`,roomId,userId)
 
         socket.on('disconnect', () =>{
             console.log('someone disconnect',userId)
@@ -120,11 +120,13 @@ io.on('connection',socket =>{
          })
 
         socket.on('send-msg',(msg,userName)=>{
+            console.log('send-msg',msg,userName)
             socket.broadcast.to(roomId).emit('receive-msg', msg,userName);
         })
     })
     socket.on('camera-toggle',(roomId,userId,state)=>{
        // console.log(roomId,userId,state)
+        console.log(`camera-toggle`,roomId,userId,state)
         socket.to(roomId).emit('user-camera-toggle',userId,state)
     })
     

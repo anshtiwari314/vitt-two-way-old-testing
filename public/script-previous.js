@@ -481,13 +481,6 @@ navigator.mediaDevices.getUserMedia({
     //  })
 
      
-
-        
-
-     
-
-     
-
     socket.on('user-connected',(newUserId)=>{
         console.log('new user ',newUserId)
         connectToNewUser(newUserId,stream)
@@ -499,6 +492,7 @@ navigator.mediaDevices.getUserMedia({
             peersObj[userId].close()
         }
     })
+
 })
 
 peer.on('open',myId=>{
