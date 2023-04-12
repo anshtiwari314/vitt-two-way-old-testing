@@ -108,11 +108,17 @@ app.get('/:room',(req,res)=>{
 
 io.on('connection',socket =>{
 
-    socket.on('join-room',(roomId,userId)=>{
-        
+    socket.on('join-room',(roomId,userId,userSocketId)=>{
+
         socket.join(roomId)
-        socket.broadcast.to(roomId).emit('user-connected',userId)
+        socket.broadcast.to(roomId).emit('user-connected',userId,userSocketId)
         console.log(`join-room`,roomId,userId)
+
+        socket.on('add-participants',(obj)=>{
+            
+            io.to(obj.toSocketId).emit('receive-participants',obj);
+            console.log('add-participants',obj)
+        })
 
         socket.on('send-msg',(msg,userName)=>{
             console.log('send-msg',msg,userName)

@@ -103,13 +103,19 @@ let usrBtn = document.getElementById('usrBtn')
 
 let sideWindowStatus = true
 let myStream
-
+let MY_SOCKET_ID 
 //const peer = new Peer(myId,{'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]})
-const peer = new Peer(myId,{
+let options1 ={
     host: "vitt-peerjs-server-production.up.railway.app",
     port: 443,
     path: "/myapp"
-})
+}
+let options2 = {
+    host: "localhost",
+    port: 5009,
+    path: "/myapp"
+}
+const peer = new Peer(myId,options2)
 
     peer.on('disconnected',()=>{
         console.log(`disconnected from peer network`)
@@ -271,6 +277,25 @@ function closeSideWindow(){
 
 socket.on('receive-msg',(msg,userName)=>{
     addNewMessage(msg,true,userName)
+})
+
+socket.on('receive-participants',obj=>{
+    if(obj.count<=0)
+        return ;
+    console.log('receive-paricipants-runned',obj)
+    // send my data after receiving data from other party 
+    socket.emit('add-participants',{
+        name:myName,
+        host:IS_HOST,
+        id:myId,
+        color:myColor,
+        toSocketId:obj.fromSocketId,
+        fromSocketId:MY_SOCKET_ID,
+        count:obj.count-1
+    })
+
+    addParticipants(obj.name,obj.host,obj.id,obj.color)
+    changeLogoName(obj.name,obj.id)
 })
 
 socket.on('user-camera-toggle',(userId,state)=>{
@@ -453,13 +478,15 @@ navigator.mediaDevices.getUserMedia({
 
                 let video = document.createElement('video')
                 addVideoStream(video,call.peer,oldUserVideoStream,undefined,()=>{ 
-                   // changeLogoName(tempObj.name,tempObj.id)
+                    // changeLogoName(tempObj.name,tempObj.id)
+
+                    
                 })
             }
         })
         
         call.on('close',()=>{
-            console.log('user leaved 1')
+           console.log('user leaved 1')
            removeVideo(call.peer)
            removeParticipants(call.peer)
         })
@@ -486,9 +513,9 @@ navigator.mediaDevices.getUserMedia({
     //  })
 
      
-    socket.on('user-connected',(newUserId)=>{
+    socket.on('user-connected',(newUserId,newUserSocketId)=>{
         console.log('new user ',newUserId)
-        connectToNewUser(newUserId,stream)
+        connectToNewUser(newUserId,stream,newUserSocketId)
         
     })
     socket.on('user-disconnected',(userId)=>{
@@ -501,7 +528,7 @@ navigator.mediaDevices.getUserMedia({
 })
 
 peer.on('open',myId=>{
-    socket.emit('join-room',ROOM_ID,myId,myName)
+    socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
 }) 
 function changeLogoName(name,id){
     //console.log(document.getElementById(id).querySelector('p'))
@@ -537,10 +564,10 @@ function addParticipants(name,host,id,color){
                     
 }
 
-function connectToNewUser(newUserId,stream){
+function connectToNewUser(newUserId,stream,newUserSocketId){
     //i m calling
     const call = peer.call(newUserId,stream)
-    let tempObj
+    //let tempObj
     // i am receiving
     call.on('stream',userVideoStream =>{
         if(!peerArr.includes(call.peer)){
@@ -548,6 +575,19 @@ function connectToNewUser(newUserId,stream){
             let video = document.createElement('video')
             addVideoStream(video,call.peer,userVideoStream,undefined,()=>{
                // changeLogoName(tempObj.name,tempObj.id)
+            
+                
+               // add participants after setup video call
+                socket.emit('add-participants',{
+                    name:myName,
+                    host:IS_HOST,
+                    id:myId,
+                    color:myColor,
+                    toSocketId:newUserSocketId,
+                    fromSocketId:MY_SOCKET_ID,
+                    count:2
+                })
+            
             })
         }
     })
@@ -560,9 +600,10 @@ function connectToNewUser(newUserId,stream){
     })
     peersObj[newUserId] =call
 
-
-
-        //for data connection 
+    
+    
+        
+    //for data connection 
         // const conn = peer.connect(newUserId)
             
         // conn.on('open', function() {
@@ -1081,8 +1122,9 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
     }
 
     socket.on('connect',(id)=>{
-        console.log(`connection established ${id}`)
-        })
+        MY_SOCKET_ID = socket.id
+        console.log(`connection established socket-id,${socket.id}`)
+    })
         
     // soc.on('receive-data',(data)=>{
     //    console.log('receive from node',data)
