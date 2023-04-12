@@ -28,6 +28,9 @@ let userColorArr = [
     color:  'rgb(238, 56, 56)' 
     }
 ]
+
+
+
 if(IS_HOST){
     let trayLayoutToggle = document.getElementById('trayLayoutToggle')
     trayLayoutToggle.style.display = 'flex'
@@ -104,6 +107,7 @@ let usrBtn = document.getElementById('usrBtn')
 let sideWindowStatus = true
 let myStream
 let MY_SOCKET_ID 
+let FIRST_TIME_CONNECT = true; 
 //const peer = new Peer(myId,{'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]})
 let options1 ={
     host: "vitt-peerjs-server-production.up.railway.app",
@@ -487,8 +491,9 @@ navigator.mediaDevices.getUserMedia({
         
         call.on('close',()=>{
            console.log('user leaved 1')
-           removeVideo(call.peer)
            removeParticipants(call.peer)
+           removeVideo(call.peer)
+           
         })
 
     })
@@ -527,9 +532,7 @@ navigator.mediaDevices.getUserMedia({
 
 })
 
-peer.on('open',myId=>{
-    socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
-}) 
+ 
 function changeLogoName(name,id){
     //console.log(document.getElementById(id).querySelector('p'))
    document.getElementById(id).querySelector('p').innerText = name.toUpperCase().substring(0,2);
@@ -538,6 +541,7 @@ function changeLogoName(name,id){
 function removeParticipants(id){
     
     let element = document.querySelector(`.${id}`)
+    console.log('remove participants triggered',element);
     element.remove()
 }
 function addParticipants(name,host,id,color){
@@ -594,8 +598,9 @@ function connectToNewUser(newUserId,stream,newUserSocketId){
 
     call.on('close',()=>{
         console.log('user leaved 2')
-        removeVideo(newUserId)
         removeParticipants(newUserId)
+        removeVideo(newUserId)
+        
         
     })
     peersObj[newUserId] =call
@@ -629,6 +634,7 @@ function connectToNewUser(newUserId,stream,newUserSocketId){
 }
 
 function removeVideo(id){
+    console.log('remove video triggered');
    let usrWrapper = document.getElementById(id)
    usrWrapper.remove()
 }
@@ -1121,9 +1127,23 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
         document.querySelector('.box').appendChild(wrapBox)
     }
 
-    socket.on('connect',(id)=>{
+    peer.on('open',myId=>{
+        console.log(`peer open`)
+        socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)  
+    })
+
+    socket.on('connect',()=>{
         MY_SOCKET_ID = socket.id
+        if(FIRST_TIME_CONNECT ===false){
+            console.log('inside join room')
+            socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
+            
+        } 
+        FIRST_TIME_CONNECT=false;
         console.log(`connection established socket-id,${socket.id}`)
+    })
+    socket.on('disconnect',()=>{
+        console.log(`socket disconnect`)
     })
         
     // soc.on('receive-data',(data)=>{

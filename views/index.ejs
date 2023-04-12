@@ -53,8 +53,9 @@
     
     try{
     //delete expired url
-    let tempLinks = localStorage.getItem('created_by_admin')
-    let arr = tempLinks.split(' ')
+    let storedArr = localStorage.getItem('created_by_admin')
+    let arr = JSON.parse(storedArr)
+    
    
     let d = new Date()
 
@@ -62,30 +63,26 @@
     arr=arr.filter((e,index)=>{
                     //console.log('element is:',e)
                     //console.log('time is : ',diff_minutes(d.getTime() ,JSON.parse(e).time) )
-                    if(JSON.parse(e).id === ROOM_ID)
+                    if(e.id === ROOM_ID)
                             IS_HOST = true 
-                    if(diff_minutes(d.getTime() ,JSON.parse(e).time)<3)
+                    if(diff_minutes(d.getTime() ,e.time)<3)
                         return true ;
                     return false;
                 })
     
-    tempLinks = ''
+    
 
-    //convert back to string
-    arr.forEach((e)=>{
-            tempLinks = `${tempLinks} ${e}`
-    })
-    tempLinks=tempLinks.trim()
+    
     //console.log('arr length end',arr.length)
     
-    localStorage.setItem('created_by_admin',`${tempLinks}`)
+    localStorage.setItem('created_by_admin',JSON.stringify(arr))
     
     console.log(IS_HOST===true ? 'u r admin':"general user")
     //end of try block    
     }catch(e){
         console.log('error in try block',e)
         localStorage.removeItem('created_by_admin')
-        setTimeout(()=>window.location.href='/',3000)
+        //setTimeout(()=>window.location.href='/',3000)
     }
 
     }
