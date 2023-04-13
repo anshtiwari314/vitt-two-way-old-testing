@@ -65,7 +65,8 @@
                     //console.log('time is : ',diff_minutes(d.getTime() ,JSON.parse(e).time) )
                     if(e.id === ROOM_ID)
                             IS_HOST = true 
-                    if(diff_minutes(d.getTime() ,e.time)<3)
+                    console.log(diff_minutes(d.getTime() ,e.time))     
+                    if(diff_minutes(d.getTime() ,e.time)<20)
                         return true ;
                     return false;
                 })
@@ -81,7 +82,7 @@
     //end of try block    
     }catch(e){
         console.log('error in try block',e)
-        localStorage.removeItem('created_by_admin')
+       // localStorage.removeItem('created_by_admin')
         //setTimeout(()=>window.location.href='/',3000)
     }
 

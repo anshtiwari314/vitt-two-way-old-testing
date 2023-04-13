@@ -77,7 +77,12 @@ if(sessionStorage.getItem('userName') != null){
 
 
 
-
+// function executeBeforeTabClose(e){
+//     e.preventDefault()
+//    e.returnValue = 'Are you sure want to leave';
+// }
+// window.addEventListener('beforeunload',executeBeforeTabClose,{capture:true})
+//return ()=> window.removeEventListener('beforeunload',executeBeforeTabClose,{capture:true})
 
 
 // basic page working setup 
@@ -121,9 +126,7 @@ let options2 = {
 }
 const peer = new Peer(myId,options1)
 
-    peer.on('disconnected',()=>{
-        console.log(`disconnected from peer network`)
-    })
+    
 
 vidIcon.addEventListener('click',()=>{
 
@@ -452,6 +455,13 @@ let peersObj = {}
 
 //console.log(navigator.mediaDevices)
 
+peer.on('open',myId=>{
+    console.log(`peer open`)
+    socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)  
+})
+peer.on('disconnected',()=>{
+    console.log(`disconnected from peer network`)
+})
 navigator.mediaDevices.getUserMedia({
     video:{
         frameRate:{
@@ -489,9 +499,9 @@ navigator.mediaDevices.getUserMedia({
             }
         })
         
-        call.on('close',()=>{
-           console.log('user leaved 1')
-           removeParticipants(call.peer)
+        call.on('close',async ()=>{
+           console.log('user leaved 1',call.peer)
+           await removeParticipants(call.peer)
            removeVideo(call.peer)
            
         })
@@ -538,18 +548,23 @@ function changeLogoName(name,id){
    document.getElementById(id).querySelector('p').innerText = name.toUpperCase().substring(0,2);
     
 }
-function removeParticipants(id){
+async function removeParticipants(id){
     
-    let element = document.querySelector(`.${id}`)
+    
+    let element =await document.querySelector(`[tempId="${id}"]`);
     console.log('remove participants triggered',element);
     element.remove()
+
+
 }
 function addParticipants(name,host,id,color){
     console.log(host,id,host=== true ?'block':'none')
     let participants  =  document.getElementById('participants')
     let div = document.createElement('div')
     div.classList.add('user')
-    div.classList.add(id)
+
+    div.setAttribute('tempId',id)
+
     
     div.innerHTML = `<div class="icon">
                         <div style="background:${userColorArr[color].background}">
@@ -596,9 +611,9 @@ function connectToNewUser(newUserId,stream,newUserSocketId){
         }
     })
 
-    call.on('close',()=>{
-        console.log('user leaved 2')
-        removeParticipants(newUserId)
+    call.on('close',async ()=>{
+        console.log('user leaved 2',newUserId)
+        await removeParticipants(newUserId)
         removeVideo(newUserId)
         
         
@@ -710,7 +725,7 @@ function timer(hour,min,sec,d){
 //code to send record data
 
 
-//const soc = io('vitt-ai-request-broadcaster-production.up.railway.app')
+const soc = io('vitt-ai-request-broadcaster-production.up.railway.app')
 
 
 
@@ -1127,10 +1142,7 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
         document.querySelector('.box').appendChild(wrapBox)
     }
 
-    peer.on('open',myId=>{
-        console.log(`peer open`)
-        socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)  
-    })
+    
 
     socket.on('connect',()=>{
         MY_SOCKET_ID = socket.id
@@ -1145,28 +1157,31 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
     socket.on('disconnect',()=>{
         console.log(`socket disconnect`)
     })
-        
-    // soc.on('receive-data',(data)=>{
-    //    console.log('receive from node',data)
+    
+    
 
-    //    if(data.imageurl){
+    soc.on('receive-data',(data)=>{
+       console.log('receive from node',data)
 
-    //     addImageMsg(data)
-    //     }else if(data.value){
+       if(data.imageurl){
 
-    //     addInputForm(data)
-    //     }else if(data.radio){
+        addImageMsg(data)
+        }else if(data.value){
 
-    //     addRadioForm(data)
-    //     }else if(data.content){
-    //     addTextMsg(data)
-    //     }else{
-    //         addOnlySuggestiveMsg(data)
-    //     }
+        addInputForm(data)
+        }else if(data.radio){
+
+        addRadioForm(data)
+        }else if(data.content){
+        addTextMsg(data)
+        }else{
+            addOnlySuggestiveMsg(data)
+        }
        
-    // })
+    })
 
 })
+
 
     
 }
