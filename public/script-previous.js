@@ -124,7 +124,7 @@ let options2 = {
     port: 5009,
     path: "/myapp"
 }
-const peer = new Peer(myId,options2)
+const peer = new Peer(myId,options1)
 
     
 
@@ -457,6 +457,7 @@ let peersObj = {}
 peer.on('open',myId=>{
     console.log(`peer open`,MY_SOCKET_ID)
     setTimeout(()=>{
+        console.log(`peer open after 2s`,MY_SOCKET_ID)
         socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
     },2000)
       
