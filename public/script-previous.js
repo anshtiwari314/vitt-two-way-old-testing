@@ -453,8 +453,19 @@ function zoomOnClick(id){
 let peerArr = []
 let peersObj = {}
 
-//console.log(navigator.mediaDevices)
 
+peer.on('open',myId=>{
+    console.log(`peer open`,MY_SOCKET_ID)
+    setTimeout(()=>{
+        socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
+    },2000)
+      
+})
+peer.on('disconnected',()=>{
+    console.log(`disconnected from peer network`)
+})    
+
+//console.log(navigator.mediaDevices)
 
 navigator.mediaDevices.getUserMedia({
     video:{
@@ -1176,13 +1187,7 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
         console.log(`socket disconnect`)
     })
     
-    peer.on('open',myId=>{
-        console.log(`peer open`)
-        socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)  
-    })
-    peer.on('disconnected',()=>{
-        console.log(`disconnected from peer network`)
-    })    
+    
 
     soc.on('receive-data',(data)=>{
        console.log('receive from node',data)
