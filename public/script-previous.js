@@ -529,7 +529,7 @@ navigator.mediaDevices.getUserMedia({
 
      
     socket.on('user-connected',(newUserId,newUserSocketId)=>{
-        console.log('new user ',newUserId)
+        console.log('new user ',newUserId,newUserSocketId)
         connectToNewUser(newUserId,stream,newUserSocketId)
         
     })
@@ -584,6 +584,9 @@ function addParticipants(name,host,id,color){
 }
 
 function connectToNewUser(newUserId,stream,newUserSocketId){
+    
+    console.log('from inside connectToNewUser',newUserSocketId);
+
     //i m calling
     const call = peer.call(newUserId,stream)
     //let tempObj
@@ -595,7 +598,16 @@ function connectToNewUser(newUserId,stream,newUserSocketId){
             addVideoStream(video,call.peer,userVideoStream,undefined,()=>{
                // changeLogoName(tempObj.name,tempObj.id)
             
-                
+               console.log('add-paricipants-runned',
+               {
+                name:myName,
+                host:IS_HOST,
+                id:myId,
+                color:myColor,
+                toSocketId:newUserSocketId,
+                fromSocketId:MY_SOCKET_ID,
+                count:2
+                })
                // add participants after setup video call
                 socket.emit('add-participants',{
                     name:myName,
