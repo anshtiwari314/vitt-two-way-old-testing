@@ -108,10 +108,10 @@ app.get('/:room',(req,res)=>{
 
 io.on('connection',socket =>{
 
-    socket.on('join-room',(roomId,userId,userSocketId)=>{
-        console.log(`join-room`,roomId,userId,userSocketId)
+    socket.on('join-room',(roomId,userId)=>{
+        console.log(`join-room`,roomId,userId)
         socket.join(roomId)
-        socket.broadcast.to(roomId).emit('user-connected',userId,userSocketId)
+        socket.broadcast.to(roomId).emit('user-connected',userId)
         
 
         socket.on('add-participants',(obj)=>{
