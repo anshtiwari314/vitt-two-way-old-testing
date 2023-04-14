@@ -124,7 +124,7 @@ let options2 = {
     port: 5009,
     path: "/myapp"
 }
-const peer = new Peer(myId,options1)
+const peer = new Peer(myId,options2)
 
     
 
@@ -501,9 +501,9 @@ navigator.mediaDevices.getUserMedia({
         
         call.on('close',async ()=>{
            console.log('user leaved 1',call.peer)
-           await removeParticipants(call.peer)
-           removeVideo(call.peer)
-           
+           //removeParticipants(call.peer)
+           //removeVideo(call.peer)
+           removeParticipantsAndVideo(call.peer)
         })
 
     })
@@ -548,10 +548,10 @@ function changeLogoName(name,id){
    document.getElementById(id).querySelector('p').innerText = name.toUpperCase().substring(0,2);
     
 }
-async function removeParticipants(id){
+function removeParticipants(id){
     
     
-    let element =await document.querySelector(`[tempId="${id}"]`);
+    let element =document.querySelector(`[tempId="${id}"]`);
     console.log('remove participants triggered',element);
     element.remove()
 
@@ -613,9 +613,9 @@ function connectToNewUser(newUserId,stream,newUserSocketId){
 
     call.on('close',async ()=>{
         console.log('user leaved 2',newUserId)
-        await removeParticipants(newUserId)
-        removeVideo(newUserId)
-        
+        //removeParticipants(newUserId)
+        //removeVideo(newUserId)
+        removeParticipantsAndVideo(newUserId)
         
     })
     peersObj[newUserId] =call
@@ -653,6 +653,17 @@ function removeVideo(id){
    let usrWrapper = document.getElementById(id)
    usrWrapper.remove()
 }
+
+function removeParticipantsAndVideo(id){
+    console.log('remove video triggered');
+    let usrWrapper = document.getElementById(id)
+    usrWrapper.remove()
+
+    let element =document.querySelector(`[tempId="${id}"]`);
+    console.log('remove participants triggered',element);
+    element.remove()
+}
+
 function addVideoStream(video,id,stream,name='NA',cb){
     let layout = document.getElementById('layout')
 
