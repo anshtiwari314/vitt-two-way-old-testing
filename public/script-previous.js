@@ -657,11 +657,11 @@ function removeVideo(id){
 function removeParticipantsAndVideo(id){
     console.log('remove video triggered');
     let usrWrapper = document.getElementById(id)
-    usrWrapper.remove()
+    usrWrapper?.remove()
 
     let element =document.querySelector(`[tempId="${id}"]`);
     console.log('remove participants triggered',element);
-    element.remove()
+    element?.remove();
 }
 
 function addVideoStream(video,id,stream,name='NA',cb){
