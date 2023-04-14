@@ -124,7 +124,7 @@ let options2 = {
     port: 5009,
     path: "/myapp"
 }
-const peer = new Peer(myId,options1)
+const peer = new Peer(myId,options2)
 
     
 
@@ -455,13 +455,7 @@ let peersObj = {}
 
 //console.log(navigator.mediaDevices)
 
-peer.on('open',myId=>{
-    console.log(`peer open`)
-    socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)  
-})
-peer.on('disconnected',()=>{
-    console.log(`disconnected from peer network`)
-})
+
 navigator.mediaDevices.getUserMedia({
     video:{
         frameRate:{
@@ -1170,7 +1164,8 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
     socket.on('connect',()=>{
         MY_SOCKET_ID = socket.id
         if(FIRST_TIME_CONNECT ===false){
-            console.log('inside join room')
+            console.log('inside join room',MY_SOCKET_ID)
+
             socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
             
         } 
@@ -1181,7 +1176,13 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
         console.log(`socket disconnect`)
     })
     
-    
+    peer.on('open',myId=>{
+        console.log(`peer open`)
+        socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)  
+    })
+    peer.on('disconnected',()=>{
+        console.log(`disconnected from peer network`)
+    })    
 
     soc.on('receive-data',(data)=>{
        console.log('receive from node',data)
