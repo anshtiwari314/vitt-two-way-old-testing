@@ -500,8 +500,10 @@ navigator.mediaDevices.getUserMedia({
                 let video = document.createElement('video')
                 addVideoStream(video,call.peer,oldUserVideoStream,undefined,()=>{ 
                     // changeLogoName(tempObj.name,tempObj.id)
+                    setTimeout(()=>{
+                        changeLogoName(tempObj.name,tempObj.id)
+                    },2000)
                     
-                    changeLogoName(tempObj.name,tempObj.id)
                 })
             }
         })
@@ -626,7 +628,9 @@ function connectToNewUser(newUserId,stream){
                 //     count:2
                 // })
                 
-                changeLogoName(tempObj.name,tempObj.id)
+                setTimeout(()=>{
+                    changeLogoName(tempObj.name,tempObj.id)
+                },2000)
             })
         }
     })
