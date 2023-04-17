@@ -30,7 +30,7 @@
 .chat-window .box{
     /* width:100%; */
     height:70vh;
-    width:max-content;
+    width:100%;
     font-size: 1.6rem;
     letter-spacing: 0.05rem;
     overflow-y: scroll;

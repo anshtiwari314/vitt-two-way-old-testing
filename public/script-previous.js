@@ -779,7 +779,7 @@ function timer(hour,min,sec,d){
 
 
 const soc = io('vitt-ai-request-broadcaster-production.up.railway.app')
-
+//const soc = io('http://localhost:5000')
 
 
 function enumIcons(color){
