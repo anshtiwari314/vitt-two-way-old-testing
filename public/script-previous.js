@@ -123,7 +123,7 @@ let options2 = {
     host: "localhost",
     port: 5009,
     path: "/myapp"
-}
+
 const peer = new Peer(myId,options1)
 
     
@@ -460,6 +460,7 @@ peer.on('open',myId=>{
         console.log(`peer open after 2s`,MY_SOCKET_ID)
     //    socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
         socket.emit('join-room',ROOM_ID,myId)
+        FIRST_TIME_CONNECT=false;
     },2000)
       
 })
@@ -467,6 +468,20 @@ peer.on('disconnected',()=>{
     console.log(`disconnected from peer network`)
 })    
 
+
+socket.on('connect',()=>{
+    MY_SOCKET_ID = socket.id
+    if(FIRST_TIME_CONNECT ===false){
+        console.log('inside join room',MY_SOCKET_ID)
+
+        socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
+        
+    } 
+    console.log(`connection established socket-id,${socket.id}`)
+})
+socket.on('disconnect',()=>{
+    console.log(`socket disconnect`)
+})
 //console.log(navigator.mediaDevices)
 
 navigator.mediaDevices.getUserMedia({
@@ -512,6 +527,10 @@ navigator.mediaDevices.getUserMedia({
            console.log('user leaved 1',call.peer)
            //removeParticipants(call.peer)
            //removeVideo(call.peer)
+           if(document.getElementById(call.peer).getAttribute('zoom')==='true'){
+            console.log(document.getElementById(call.peer).getAttribute('zoom'))    
+            zoomOnClick(call.peer)
+           }
            removeParticipantsAndVideo(call.peer)
         })
 
@@ -639,6 +658,11 @@ function connectToNewUser(newUserId,stream){
         console.log('user leaved 2',newUserId)
         //removeParticipants(newUserId)
         //removeVideo(newUserId)
+        
+        if(document.getElementById(newUserId).getAttribute('zoom')==='true'){
+            console.log(document.getElementById(newUserId).getAttribute('zoom'))    
+            zoomOnClick(newUserId)
+           }
         removeParticipantsAndVideo(newUserId)
         
     })
@@ -1173,20 +1197,7 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
 
     
 
-    socket.on('connect',()=>{
-        MY_SOCKET_ID = socket.id
-        if(FIRST_TIME_CONNECT ===false){
-            console.log('inside join room',MY_SOCKET_ID)
-
-            socket.emit('join-room',ROOM_ID,myId,MY_SOCKET_ID)
-            
-        } 
-        FIRST_TIME_CONNECT=false;
-        console.log(`connection established socket-id,${socket.id}`)
-    })
-    socket.on('disconnect',()=>{
-        console.log(`socket disconnect`)
-    })
+    
     
     
 

@@ -70,7 +70,7 @@
 <body>
     <div class="container">
         <div>
-            <h2>U are Successfully leaved</h2>
+            <h2>U are Successfully left</h2>
         </div>
         
         <br/>
@@ -94,10 +94,11 @@
         sessionStorage.removeItem('tempRoomId')
         window.location.pathname = '/'
     })
-    setInterval(()=>{
+    let id = setInterval(()=>{
         if(count <= 0){
             sessionStorage.removeItem('tempRoomId')
             window.location.pathname = '/'
+            
         }
         returnToHome.innerText = `Return to main screen ${count}`
         count--
