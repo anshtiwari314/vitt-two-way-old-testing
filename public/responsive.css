@@ -26,6 +26,7 @@
     .rm{
         width:100vw;
     }
+    
     .chat{
         position:absolute;
         width:30vw;
@@ -36,6 +37,9 @@
     .chat .wrapper{
         /* background-color: white; */
         height:85vh;
+    }
+    .chat-window .box{
+        width:fit-content;
     }
     .rm{
         width:100vw;
