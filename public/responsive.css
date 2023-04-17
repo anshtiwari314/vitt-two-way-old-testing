@@ -6,6 +6,10 @@
         display:none;
         width:100vw;
     } */
+    
+    .chat-window .wrap-box{
+        width:fit-content;
+    }
     .rm .rm-footer .wrap input{
        
         height:50%;
@@ -37,9 +41,6 @@
     .chat .wrapper{
         /* background-color: white; */
         height:85vh;
-    }
-    .chat-window .box{
-        width:fit-content;
     }
     .rm{
         width:100vw;

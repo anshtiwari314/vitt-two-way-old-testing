@@ -26,10 +26,11 @@
     background-color: #1E1E1E;
     /* height:100vh; */
 }
+
 .chat-window .box{
     /* width:100%; */
     height:70vh;
-    width:30vw;
+    width:fit-content;
     font-size: 1.6rem;
     letter-spacing: 0.05rem;
     overflow-y: scroll;
