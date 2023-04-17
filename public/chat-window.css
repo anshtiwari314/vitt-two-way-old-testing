@@ -37,9 +37,7 @@
     padding-bottom: 10vh;
     /* border:0.1rem solid blue; */
 }
-.chat-window .wrap-box{
-    width:60vw;
-}
+
 .chat-window .box::-webkit-scrollbar {
     display: none;
   }
@@ -49,6 +47,7 @@
     align-items: center;
     margin-left: 2rem;
     /* border:0.1rem solid tomato; */
+    width:60%;
 }
 .chat-window .wrap-box i{
     font-size: 3rem;
@@ -313,15 +312,19 @@
 /* responsive*/
 @media screen and (max-width:1200px){
     .chat-window .cont .box{
-        width:60vw;
+        width:100%;
+    }
+    .chat-window .cont .box .wrap-box{
+        width:90%;
     }
     .chat-window .cont .box-footer input{
-        width:40rem
+        width:40rem;
     }
 }
 @media screen and (max-width:800px){
     .chat-window .cont .box{
         width:100%;
+
     }
     .chat-window .cont .box-footer input{
         width:20rem;
