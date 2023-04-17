@@ -123,7 +123,7 @@ let options2 = {
     host: "localhost",
     port: 5009,
     path: "/myapp"
-
+}
 const peer = new Peer(myId,options1)
 
     
