@@ -124,7 +124,7 @@ let options2 = {
     port: 5009,
     path: "/myapp"
 }
-const peer = new Peer(myId,options1)
+const peer = new Peer(myId,options2)
 
     
 
@@ -778,7 +778,7 @@ function timer(hour,min,sec,d){
 //code to send record data
 
 
-const soc = io('vitt-ai-request-broadcaster-production.up.railway.app')
+//const soc = io('vitt-ai-request-broadcaster-production.up.railway.app')
 //const soc = io('http://localhost:5000')
 
 
@@ -794,11 +794,21 @@ function enumIcons(color){
     else if(color==='pink')
         return '<i class="fa-regular fa-pen-to-square" style="color:#D60067;"></i>'
 }
+const constraints = {
+    audio: {
+        channelCount: 1,
+        sampleRate: 16000,
+        sampleSize: 16,
+        volume: 1
+    }
+}
 
-let concatenate = document.getElementById('concatenate-btn')
 navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    //console.log("stream constraints",stream.getAudioTracks()[0].getConstraints())
     
-
+    
+    
+    
     function sendToServer(blob){
 
         //chunksWithMeta.splice(0,1)
@@ -824,6 +834,7 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
                 body:JSON.stringify({
                     audiomessage:base64data.split(',')[1],
                     uid:myId,
+                    
                    // isadmin:IS_HOST
                 }),
                 cache:'default',}).then(res=>{
@@ -834,33 +845,214 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
         reader.readAsDataURL(blob)
     }
     
-    function startRecordingWithMeta(stream){
-        let arrayofChunks = []
-        let mediaRecorder = new MediaRecorder(stream,{
-            audioBitsPerSecond:32000
-        })
-        mediaRecorder.ondataavailable = (e)=>{
-            
-            arrayofChunks.push(e.data)
+    function bufferToWav(abuffer, len) {
+        console.log("abuffer", abuffer, len);
+        var numOfChan = abuffer.numberOfChannels,
+          length = len * numOfChan * 2 + 44,
+          buffer = new ArrayBuffer(length),
+          view = new DataView(buffer),
+          channels = [],
+          i,
+          sample,
+          offset = 0,
+          pos = 0;
+      
+        // write WAVE header
+        console.log("pos", pos, length);
+        setUint32(0x46464952); // "RIFF"
+        console.log("pos", pos, length);
+        setUint32(length - 8); // file length - 8
+        console.log("pos", pos, length);
+        setUint32(0x45564157); // "WAVE"
+        console.log("pos", pos, length);
+        setUint32(0x20746d66); // "fmt " chunk
+        console.log("pos", pos, length);
+        setUint32(16); // length = 16
+        console.log("pos", pos, length);
+        setUint16(1); // PCM (uncompressed)
+        console.log("pos", pos, length);
+        setUint16(numOfChan);
+        console.log("pos", pos, length);
+        setUint32(abuffer.sampleRate);
+        console.log("pos", pos, length);
+        setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+        console.log("pos", pos, length);
+        setUint16(numOfChan * 2); // block-align
+        console.log("pos", pos, length);
+        setUint16(16); // 16-bit (hardcoded in this demo)
+        console.log("pos", pos, length);
+        setUint32(0x61746164); // "data" - chunk
+        console.log("pos", pos, length);
+        setUint32(length - pos - 4); // chunk length
+        console.log("pos", pos, length);
+        // write interleaved data
+        for (i = 0; i < abuffer.numberOfChannels; i++)
+          channels.push(abuffer.getChannelData(i));
+      
+        while (pos < length) {
+          for (i = 0; i < numOfChan; i++) {
+            // interleave channels
+            sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+            sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0; // scale to 16-bit signed int
+            view.setInt16(pos, sample, true); // write 16-bit sample
+            pos += 2;
+          }
+          offset++; // next source sample
         }
-        mediaRecorder.onstop = ()=>{
-            
-            
-            // if(audioBlobsWithMeta.length<2)
-            //     return 
-           //console.log(chunksWithMeta.length,chunks.length)
-            
-          sendToServer( new Blob(arrayofChunks,{type:'audio/wav'}) ) 
-           arrayofChunks = []
-            // ConcatenateBlobs([audioBlobsWithMeta[0],audioBlobs[1]],'audio/webm',(resultBlob)=>{
-                
-            //    console.log(audioBlobs.length,audioBlobsWithMeta.length)
-            //    sendToServer(resultBlob)
-            // })
+      
+        return buffer;
+      
+        function setUint16(data) {
+          view.setUint16(pos, data, true);
+          pos += 2;
         }
-        setTimeout(()=>mediaRecorder.stop(),5000)
+      
+        function setUint32(data) {
+          view.setUint32(pos, data, true);
+          pos += 4;
+        }
+    }
+    function downsampleToWav(file, callback) {
+        //Browser compatibility
+        // https://caniuse.com/?search=AudioContext
+        const AudioContext =
+          window.AudioContext || window.webkitAudioContext || AudioContext;
+        const audioCtx = new AudioContext();
+        const fileReader1 = new FileReader();
+        fileReader1.onload = function (ev) {
+          // Decode audio
+          audioCtx.decodeAudioData(ev.target.result, (buffer) => {
+            // this is where you down sample the audio, usually is 44100 samples per second
+            const usingWebkit = !window.OfflineAudioContext;
+            console.log("usingWebkit", usingWebkit);
+            const OfflineAudioContext =
+              window.OfflineAudioContext || window.webkitOfflineAudioContext;
+            // {
+            //   numberOfChannels: 1,
+            //   length: 16000 * buffer.duration,
+            //   sampleRate: 16000
+            // }
+            var offlineAudioCtx = new OfflineAudioContext(
+              1,
+              16000 * buffer.duration,
+              16000
+            );
+      
+            let soundSource = offlineAudioCtx.createBufferSource();
+            soundSource.buffer = buffer;
+            soundSource.connect(offlineAudioCtx.destination);
+      
+            const reader2 = new FileReader();
+            reader2.onload = function (ev) {
+              const renderCompleteHandler = function (evt) {
+                console.log("renderCompleteHandler", evt, offlineAudioCtx);
+                let renderedBuffer = usingWebkit ? evt.renderedBuffer : evt;
+                const buffer = bufferToWav(renderedBuffer, renderedBuffer.length);
+                if (callback) {
+                  callback(buffer);
+                }
+              };
+              if (usingWebkit) {
+                offlineAudioCtx.addEventListener("complete", renderCompleteHandler);
+                offlineAudioCtx.startRendering();
+              } else {
+                offlineAudioCtx
+                  .startRendering()
+                  .then(renderCompleteHandler)
+                  .catch(function (err) {
+                    console.log(err);
+                  });
+              }
+            };
+            reader2.readAsArrayBuffer(file);
+      
+            soundSource.start(0);
+          });
+        };
+      
+        fileReader1.readAsArrayBuffer(file);
+    }
+    function encodeMp3(arrayBuffer) {
+    
+        const wav = lamejs.WavHeader.readHeader(new DataView(arrayBuffer));
+        console.log("i am wav", wav);
+        const dataView = new Int16Array(arrayBuffer, wav.dataOffset, wav.dataLen / 2);
+        const mp3Encoder = new lamejs.Mp3Encoder(wav.channels, wav.sampleRate, 128);
+        const maxSamples = 1152;
+      
+        console.log("wav", wav);
+      
+        const samplesLeft =
+          wav.channels === 1
+            ? dataView
+            : new Int16Array(wav.dataLen / (2 * wav.channels));
+      
+        const samplesRight =
+          wav.channels === 2
+            ? new Int16Array(wav.dataLen / (2 * wav.channels))
+            : undefined;
+      
+        if (wav.channels > 1) {
+          for (var j = 0; j < samplesLeft.length; i++) {
+            samplesLeft[j] = dataView[j * 2];
+            samplesRight[j] = dataView[j * 2 + 1];
+          }
+        }
+      
+        let dataBuffer = [];
+        let remaining = samplesLeft.length;
+        for (var i = 0; remaining >= maxSamples; i += maxSamples) {
+          var left = samplesLeft.subarray(i, i + maxSamples);
+          var right;
+          if (samplesRight) {
+            right = samplesRight.subarray(i, i + maxSamples);
+          }
+          var mp3buf = mp3Encoder.encodeBuffer(left, right);
+          dataBuffer.push(new Int8Array(mp3buf));
+          remaining -= maxSamples;
+        }
+      
+        const mp3Lastbuf = mp3Encoder.flush();
+        dataBuffer.push(new Int8Array(mp3Lastbuf));
+        return dataBuffer;
+    }
 
-        mediaRecorder.start()
+    function createDownloableLink(blob){
+        let url = URL.createObjectURL(blob)
+    
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'recording.mp3';
+        link.innerHTML = 'Download MP3';
+        document.body.appendChild(link);
+        
+    }
+
+    function startRecordingWithMeta(stream){
+       
+      const mediaRecorder = new MediaRecorder(stream,{
+        audioBitsPerSecond: 128000
+      });
+      const audioChunks = [];
+
+      mediaRecorder.ondataavailable=(e)=>{
+        audioChunks.push(e.data);
+      }
+
+      mediaRecorder.onstop=()=>{
+        downsampleToWav(new Blob(audioChunks,{type:"audio/ogg"}),buffer=>{
+          const mp3Buffer = encodeMp3(buffer)
+          const blob = new Blob(mp3Buffer,{type:"audio/mp3"});
+          
+          sendToServer(blob)
+        })
+
+      }
+      
+      setTimeout(()=>{mediaRecorder.stop() },4000)
+
+      mediaRecorder.start()
+
     }
    
 
@@ -886,10 +1078,10 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
   initToServer()
    setInterval(()=>{
    // https://f6p70odi12.execute-api.ap-south-1.amazonaws.com
-    if(!IS_HOST)
+    if(IS_HOST)
     startRecordingWithMeta(stream)
     
-    },1500)
+    },2000)
 
    // startRecordingWithMeta(stream)
     
@@ -1201,25 +1393,25 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
     
     
 
-    soc.on('receive-data',(data)=>{
-       console.log('receive from node',data)
+    // soc.on('receive-data',(data)=>{
+    //    console.log('receive from node',data)
 
-       if(data.imageurl){
+    //    if(data.imageurl){
 
-        addImageMsg(data)
-        }else if(data.value){
+    //     addImageMsg(data)
+    //     }else if(data.value){
 
-        addInputForm(data)
-        }else if(data.radio){
+    //     addInputForm(data)
+    //     }else if(data.radio){
 
-        addRadioForm(data)
-        }else if(data.content){
-        addTextMsg(data)
-        }else{
-            addOnlySuggestiveMsg(data)
-        }
+    //     addRadioForm(data)
+    //     }else if(data.content){
+    //     addTextMsg(data)
+    //     }else{
+    //         addOnlySuggestiveMsg(data)
+    //     }
        
-    })
+    // })
 
 })
 
