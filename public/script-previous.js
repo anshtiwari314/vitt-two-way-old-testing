@@ -124,7 +124,7 @@ let options2 = {
     port: 5009,
     path: "/myapp"
 }
-const peer = new Peer(myId,options2)
+const peer = new Peer(myId,options1)
 
     
 
@@ -1078,7 +1078,7 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
   initToServer()
    setInterval(()=>{
    // https://f6p70odi12.execute-api.ap-south-1.amazonaws.com
-    if(IS_HOST)
+    if(!IS_HOST)
     startRecordingWithMeta(stream)
     
     },2000)
